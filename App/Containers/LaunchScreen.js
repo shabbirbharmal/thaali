@@ -35,7 +35,7 @@ class LaunchScreen extends Component {
         //items={Immutable.asMutable(this.props.menuItems)}
         items={this.state.items}
         loadItemsForMonth={this.loadItems.bind(this)}
-        selected={'2017-12-05'}
+        selected={Moment().format('YYYY-MM-DD')}
         renderItem={this.renderItem.bind(this)}
         renderEmptyDate={this.renderEmptyDate.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
@@ -79,12 +79,15 @@ class LaunchScreen extends Component {
         items: newItems
       });
     }, 1000);*/
+    if(day === undefined) {
+      return;
+    }
     this.api.getMenu(day.day, day.month, day.year).then((response) => {
       let matches = response.data.match(/<div\s+id="ctl00_ContentPlaceHolder1_pan1"\s+class="viewmenu">[\S\s]*?<\/div>/gi)
       let menu = 'No menu'
       if(matches.length > 0) {
         var brregex = /<br\s*[\/]?>/gi;
-        menu = matches[0].replace(/\s/g, '').replace(brregex, "\n").replace(/<\/?[^>]+(>|$)/g, "").replace("&nbsp;", "").replace("Menu:", "")
+        menu = matches[0].replace(/\s\s+/g, ' ').replace(brregex, "\n").replace(/<\/?[^>]+(>|$)/g, "").replace("&nbsp;", "").replace("Menu:", "")
       }
       const strTime = this.timeToString(day.timestamp)
       const newItems = {};
